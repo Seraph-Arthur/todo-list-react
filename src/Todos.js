@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
-import AddItem from './AddItem'
-import { TodosContainer, ListItem } from './Styles'
-import uuid from 'uuid/v4'
 import './Todos'
+import AddItem from './AddItem'
+import EditItem from './EditItem'
+import React, { Component } from 'react'
+import Icon from '@material-ui/core/Icon'
+import { TodosContainer, ListItem } from './Styles'
 import DeleteIcon from '@material-ui/icons/Delete'
 
 class Todos extends Component {
@@ -12,7 +13,7 @@ class Todos extends Component {
 
   handleDelete(id) {
     let todos = []
-
+    // eslint-disable-next-line
     this.state.todos.map(todo => {
       if (todo.id !== id) {
         todos.push(todo)
@@ -22,15 +23,36 @@ class Todos extends Component {
     this.setState({ todos })
   }
 
+  toggleInput = id => {
+    let todos = this.state.todos.map(todo => {
+      let newTodo = { ...todo }
+      if (todo.id === id) {
+        newTodo.isEditing = !newTodo.isEditing
+        return newTodo
+      }
+      return todo
+    })
+    this.setState({ todos })
+  }
+
   handleClick(id) {
-    let todos = []
-    // eslint-disable-next-line
-    this.state.todos.map(todo => {
+    let todos = this.state.todos.map(todo => {
       let newTodo = { ...todo }
       if (todo.id === id) {
         newTodo.line = !newTodo.line
+        return newTodo
       }
-      todos.push(newTodo)
+      return todo
+    })
+    this.setState({ todos })
+  }
+
+  editItem = (id, newContent) => {
+    const todos = this.state.todos.map(todo => {
+      if (todo.id === id) {
+        return { ...todo, content: newContent, isEditing: false }
+      }
+      return todo
     })
     this.setState({ todos })
   }
@@ -48,17 +70,28 @@ class Todos extends Component {
           {this.state.todos.map(todo => {
             return (
               <ListItem key={todo.id} line={todo.line}>
-                <span
-                  className="todo_item"
-                  onClick={() => this.handleClick(todo.id)}>
-                  {todo.content}
-                </span>
-                <span>
-                  <DeleteIcon
-                    className="pointer"
-                    onClick={() => this.handleDelete(todo.id)}
-                  />
-                </span>
+                {todo.isEditing ? (
+                  <EditItem content={todo.content} id={todo.id} editItem={this.editItem}/>
+                ) : (
+                  <>
+                    <span
+                      className="todo_item"
+                      onClick={() => this.handleClick(todo.id)}>
+                      {todo.content}
+                    </span>
+                    <span>
+                      <Icon
+                        className="pointer"
+                        onClick={() => this.toggleInput(todo.id)}>
+                        edit
+                      </Icon>
+                      <DeleteIcon
+                        className="pointer"
+                        onClick={() => this.handleDelete(todo.id)}
+                      />
+                    </span>
+                  </>
+                )}
               </ListItem>
             )
           })}

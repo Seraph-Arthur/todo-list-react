@@ -33,11 +33,12 @@ const ListItem = styled.li`
   display: flex;
   align-items: center;
   justify-content: space-between;
-    color: #f5f5dc;
+  color: #f5f5dc;
 
   .pointer {
     cursor: pointer;
     margin-right: 50px;
+    margin-left: -40px;
   }
 
   .todo_item {
